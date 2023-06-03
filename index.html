@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>File HEX Edit - FedeKrum</title>
+    <title>ROMedit - A Javascript HEX Editor - FedeKrum</title>
     <link
       rel="stylesheet"
       href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -20,7 +20,7 @@
             ondragover="handleDragOver(event);"
             ondrop="handleFileSelect(event);"
           >
-            <p class="text-center">Drag and drop a file to edit</p>
+            <p class="text-center">Drag and drop a ROM file to edit</p>
             <div class="text-center">
               <label for="fileInput" class="btn btn-primary">
                 or Select a file</label
@@ -67,7 +67,7 @@
             ></textarea>
 
             <a id="download_link" download="" href="””" hidden
-              >Save edited file</a
+              >Save/Download edited file</a
             >
 
             <small id="md5HashView" class="form-text text-muted" hidden
