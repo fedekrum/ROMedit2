@@ -120,27 +120,14 @@ document.getElementById("values").addEventListener("scroll", function () {
 });
 
 
-
-
-
-
-
-
 function generateNewFile() {
   str = document.getElementById("values").value;
   console.log(str);
 
-  // document
-  //   .getElementById("download_link")
-  //   .setAttribute("hidden", "hidden");
-
   var csvIndex;
   var csvData;
-  // for (let loop = 0; loop < originalFileContent.length; loop++) {
-  //   newFileContent[loop] = originalFileContent[loop];
-  // }
+
   newFileContent = originalFileContent.slice();
-  newFileContent[0] = 1;
 
   const lines = str.split(/\r?\n/); // Split string into array of lines
   const hexPairRegex = /^[0-9a-fA-F]*(?:[,:;-])[0-9a-fA-F]{1,2}$/; // Regex for hex pairs separated by comma
