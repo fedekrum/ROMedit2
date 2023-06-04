@@ -1,10 +1,12 @@
 #valuesStatus {
+  font-family: AndaleMono, Monaco, monospace;
   overflow: hidden;
   white-space: pre-wrap;
   resize: none;
 }
 
 #values {
+  font-family: AndaleMono, Monaco, monospace;
   overflow: hidden;
   white-space: pre-wrap;
   resize: none;

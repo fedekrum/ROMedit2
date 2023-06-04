@@ -52,7 +52,7 @@
               class="form-control"
               id="offset"
               name="offset"
-              value="0"
+              value="1000"
             />
           </div>
           <div id="csv" class="form-group mt-4" hidden>
@@ -100,7 +100,18 @@
         </div>
       </div>
     </div>
+    <script type="text/javascript" src="generate.js"></script>
     <script>
+      var originalFileContent;
+      var newFileContent;
+      var originalFileName = " ";
+      //var fileLength = 0;
+      var md5Hash = "";
+      var md5NewHash = "";
+      var values = "";
+      var valuesStatus = "";
+      var changes;
+      var data;
       var offset = Number("0x" + document.getElementById("offset").value); //decimal
 
       document.getElementById("offsetDefault").innerHTML =
@@ -120,31 +131,35 @@
         let files =
           event.type === "drop" ? event.dataTransfer.files : event.target.files;
         let file = files[0];
-
-        // Update filename and filesize
-        document.getElementById("filename").innerHTML = file.name;
-        document.getElementById("filelength").innerHTML = file.size;
-        // Show hidden csv and offset-group
-        document.getElementById("csv").removeAttribute("hidden");
-        document.getElementById("offset-group").removeAttribute("hidden");
-
         let reader = new FileReader();
 
         reader.onload = function (event) {
           let arrayBuffer = event.target.result;
-          let bytes = new Uint8Array(arrayBuffer);
-          hexview(bytes);
-          // Update MD5
-          let md5Hash = md5(arrayBuffer);
-          document.getElementById("md5").innerHTML = md5Hash;
-        };
+          originalFileContent = new Uint8Array(arrayBuffer);
+          newFileContent = originalFileContent.slice();
 
+          console.log(originalFileContent);
+          console.log(newFileContent);
+          //hexview(newFileContent);
+          // Update MD5
+          md5Hash = md5(newFileContent.buffer);
+          document.getElementById("md5").innerHTML = md5Hash;
+
+          // Update filename and filesize
+          document.getElementById("filename").innerHTML = file.name;
+          document.getElementById("filelength").innerHTML = file.size;
+          // Show hidden csv and offset-group
+          document.getElementById("csv").removeAttribute("hidden");
+          document.getElementById("offset-group").removeAttribute("hidden");
+          generateNewFile();
+        };
         reader.readAsArrayBuffer(file);
       }
 
       function hexview(bytes) {
         // Create the hex dump
-        let hexDump = "";
+        let hexDump = "00010203 04050607 08090a0b 0c0d0e0f\n";
+        hexDump += "-------- -------- -------- --------\n";
         let hexLine = "";
         let asciiLine = "";
         for (let i = 0; i < bytes.length; i++) {
@@ -179,9 +194,19 @@
         pre.textContent = hexDump;
       }
 
+      function setByteAt(indexStr, dataStr) {
+        //indexStr = parseInt(indexStr.toString(), 16);
+        //dataStr = parseInt(dataStr.toString(), 16);
+        if (indexStr - offset > newFileContent.length - 1) return;
+        if (indexStr - offset < 0) return;
+        newFileContent[indexStr - offset] = dataStr;
+      }
+
+      // generate
+
       // ---------------- VALUES INPUT EVENT
       document.getElementById("values").oninput = () => {
-        generateNewFile(document.getElementById("values").value);
+        generateNewFile();
       };
 
       // ---------------- OFFSET INPUT EVENT
@@ -189,7 +214,7 @@
         offset = Number("0x" + document.getElementById("offset").value);
         if (isNaN(offset)) offset = 0;
         document.getElementById("offsetDEC").innerHTML = offset;
-        generateNewFile(document.getElementById("values").value);
+        generateNewFile();
         console.log(offset); // Do something
       };
 
