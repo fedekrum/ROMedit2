@@ -1,0 +1,17 @@
+#valuesStatus {
+  overflow: hidden;
+  white-space: pre-wrap;
+  resize: none;
+}
+
+#values {
+  overflow: hidden;
+  white-space: pre-wrap;
+  resize: none;
+  overflow-y: scroll;
+}
+
+#file-content {
+  font-family: AndaleMono, Monaco, monospace;
+  display: inline-block;
+}

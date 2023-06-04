@@ -9,6 +9,7 @@
       integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
       crossorigin="anonymous"
     />
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="container mt-5">
@@ -43,9 +44,9 @@
           </div>
           <div id="offset-group" class="form-group mt-4" hidden>
             <label for="offset"
-              >Offset: (in hex notation, default:0) | current decimal value:
-              <span id="offsetDEC">0</span></label
-            >
+              >Offset: (in hex notation, default:<span id="offsetDefault"></span
+              >) | current decimal value: <span id="offsetDEC"></span
+            ></label>
             <input
               type="text"
               class="form-control"
@@ -59,15 +60,35 @@
               >Values: (address,byte : both in hex notation) | changes:
               <span id="changes"></span
             ></label>
-            <textarea
-              class="form-control"
-              id="values"
-              name="values"
-              rows="5"
-            ></textarea>
 
-            <a id="download_link" download="" href="””" hidden
-              >Save/Download edited file</a
+            <div class="form-row">
+              <div class="col col-3">
+                <textarea
+                  id="valuesStatus"
+                  name="valuesStatus"
+                  class="form-control"
+                  rows="5"
+                  readonly
+                ></textarea>
+              </div>
+              <div class="col col-9">
+                <textarea
+                  id="values"
+                  name="values"
+                  class="form-control"
+                  rows="5"
+                ></textarea>
+              </div>
+              <div class="col col-10"></div>
+            </div>
+
+            <a
+              id="download_link"
+              download=""
+              href="””"
+              class="btn btn-primary mt-3"
+              hidden
+              >Download edited file</a
             >
 
             <small id="md5HashView" class="form-text text-muted" hidden
@@ -75,127 +96,89 @@
               <span id="md5Hash"></span>
             </small>
           </div>
-          <pre><div id="file-content"></div></pre>
+          <pre id="file-content"></pre>
         </div>
       </div>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/core.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/md5.min.js"></script>
-
     <script>
-      var originalFileContent = " ";
-      var originalFileName = " ";
-      var newFileContent = " ";
-      var md5Hash = "";
-      var md5FileHash = "";
-      var values = "";
-      var changes;
-      var data;
-      var offset = "0";
-      var fileLength = 0;
+      var offset = Number("0x" + document.getElementById("offset").value); //decimal
+
+      document.getElementById("offsetDefault").innerHTML =
+        document.getElementById("offset").value;
+      document.getElementById("offsetDEC").innerHTML = offset;
+
+      function handleDragOver(event) {
+        event.stopPropagation();
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+      }
 
       function handleFileSelect(event) {
         event.stopPropagation();
         event.preventDefault();
-        var files = event.target.files || event.dataTransfer.files;
-        if (files.length > 0) {
-          var file = files[0];
-          originalFileName = files[0].name;
-          var reader = new FileReader();
-          reader.onload = function (event) {
-            originalFileContent = event.target.result;
-            fileLength = originalFileContent.length;
-            md5FileHash = CryptoJS.MD5(originalFileContent).toString();
-            document.getElementById("file-content").innerHTML =
-              originalFileContent;
-            document.getElementById("md5").innerHTML = md5FileHash;
-            document.getElementById("filename").innerHTML = originalFileName;
 
-            document.getElementById("filelength").innerHTML = fileLength;
-            document.getElementById("csv").removeAttribute("hidden");
-            document.getElementById("offset-group").removeAttribute("hidden");
+        let files =
+          event.type === "drop" ? event.dataTransfer.files : event.target.files;
+        let file = files[0];
 
-            newFileContent = originalFileContent;
-            generateNewFile(document.getElementById("values").value); //-----------------
-          };
-          reader.readAsText(file);
-        }
+        // Update filename and filesize
+        document.getElementById("filename").innerHTML = file.name;
+        document.getElementById("filelength").innerHTML = file.size;
+        // Show hidden csv and offset-group
+        document.getElementById("csv").removeAttribute("hidden");
+        document.getElementById("offset-group").removeAttribute("hidden");
+
+        let reader = new FileReader();
+
+        reader.onload = function (event) {
+          let arrayBuffer = event.target.result;
+          let bytes = new Uint8Array(arrayBuffer);
+          hexview(bytes);
+          // Update MD5
+          let md5Hash = md5(arrayBuffer);
+          document.getElementById("md5").innerHTML = md5Hash;
+        };
+
+        reader.readAsArrayBuffer(file);
       }
 
-      function handleDragOver(event) {
-        event.preventDefault();
-      }
+      function hexview(bytes) {
+        // Create the hex dump
+        let hexDump = "";
+        let hexLine = "";
+        let asciiLine = "";
+        for (let i = 0; i < bytes.length; i++) {
+          // Convert byte to hex
+          let byteHex = bytes[i].toString(16).padStart(2, "0");
+          hexLine += byteHex;
 
-      function setCharAt(str, index, data, offset = 0) {
-        if (index - offset > str.length - 1) return str;
-        return (
-          str.substring(0, index - offset) +
-          String.fromCharCode(data) +
-          str.substring(index - offset + 1)
-        );
-      }
+          // Convert byte to ASCII
+          let byteChar = bytes[i];
+          let char =
+            byteChar >= 0x20 && byteChar <= 0x7e
+              ? String.fromCharCode(byteChar)
+              : ".";
+          asciiLine += char;
 
-      function generateNewFile(str) {
-        // document
-        //   .getElementById("download_link")
-        //   .setAttribute("hidden", "hidden");
+          // Add spaces after every 4 bytes
+          if ((i + 1) % 4 == 0) {
+            hexLine += " ";
+          }
 
-        var csvIndex;
-        var csvData;
-        newFileContent = originalFileContent;
-
-        const lines = str.split(/\r?\n/); // Split string into array of lines
-        const hexPairRegex = /^[0-9a-fA-F]*(?:[,:;-])[0-9a-fA-F]{1,2}$/; // Regex for hex pairs separated by comma
-        console.log("---");
-        changes = 0;
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].replace(/\s/g, ""); // Remove all whitespace from line
-
-          if (hexPairRegex.test(line)) {
-            csvIndex = Number("0x" + line.split(/[,:;-]/)[0]) - offset;
-            csvData = Number("0x" + line.split(/[,:;-]/)[1]);
-            console.log(newFileContent.length);
-            if (csvIndex >= 0 && csvIndex < newFileContent.length) {
-              changes++;
-              newFileContent = setCharAt(newFileContent, csvIndex, csvData, 0);
-              console.log(
-                `Line ${
-                  i + 1
-                } contains a valid hex pair: ${csvIndex}*${csvData}`
-              );
-            }
+          // If last byte or if EOL
+          if (i == bytes.length - 1 || (i + 1) % 16 == 0) {
+            hexDump +=
+              hexLine.padEnd(36, " ") + "| " + asciiLine.padEnd(16, " ") + "\n";
+            asciiLine = "";
+            hexLine = "";
           }
         }
 
-        md5Hash = CryptoJS.MD5(newFileContent).toString();
-        document.getElementById("md5Hash").innerHTML = md5Hash;
-
-        if (changes > 0) {
-          document.getElementById("download_link").removeAttribute("hidden");
-          document.getElementById("md5HashView").removeAttribute("hidden");
-        } else {
-          document
-            .getElementById("download_link")
-            .setAttribute("hidden", "hidden");
-          document
-            .getElementById("md5HashView")
-            .setAttribute("hidden", "hidden");
-        }
-
-        document.getElementById("changes").innerHTML = changes;
-        document.getElementById("file-content").innerHTML = newFileContent;
-
-        // ---------------- DOWNLOAD LINK GENERATOR (BLOB)
-        data = new Blob([newFileContent], { type: "application/octet-stream" });
-        url = window.URL.createObjectURL(data);
-        document
-          .getElementById("download_link")
-          .setAttribute("download", originalFileName);
-        document.getElementById("download_link").href = url;
-
-        console.log(`Changes: ${changes}`);
+        // Show the hex and ASCII dumps
+        let pre = document.getElementById("file-content");
+        pre.textContent = hexDump;
       }
+
       // ---------------- VALUES INPUT EVENT
       document.getElementById("values").oninput = () => {
         generateNewFile(document.getElementById("values").value);
@@ -209,6 +192,13 @@
         generateNewFile(document.getElementById("values").value);
         console.log(offset); // Do something
       };
+
+      // ---------------- PARALLEL SCROLL
+      document.getElementById("values").addEventListener("scroll", function () {
+        document.getElementById("valuesStatus").scrollTop = this.scrollTop;
+      });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/js-md5@0.7.3/src/md5.min.js"></script>
   </body>
 </html>
