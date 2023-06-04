@@ -1,2 +1,3 @@
 # ROMedit
- A Javascript HEX editor oriented to MAME roms
+ A very basic Javascript HEX editor oriented to MAME roms
+https://fedekrum.github.io/ROMedit/
