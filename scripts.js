@@ -10,8 +10,6 @@ var changes;
 var data;
 var offset = Number("0x" + document.getElementById("offset").value); //decimal
 
-document.getElementById("offsetDefault").innerHTML =
-  document.getElementById("offset").value;
 document.getElementById("offsetDEC").innerHTML = offset;
 
 function handleDragOver(event) {
