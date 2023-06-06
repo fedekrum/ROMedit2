@@ -3,12 +3,13 @@ var newFileContent;
 var originalFileName = " ";
 //var fileLength = 0;
 var md5Hash = "";
-var md5NewHash = "";
+//var md5NewHash = "";
 var values = "";
 var valuesStatus = "";
 var changes;
 var data;
 var offset = Number("0x" + document.getElementById("offset").value); //decimal
+const hexChain = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '0a', '0b', '0c', '0d', '0e', '0f'];
 
 document.getElementById("offsetDEC").innerHTML = offset;
 
@@ -32,14 +33,13 @@ function handleFileSelect(event) {
     originalFileContent = new Uint8Array(arrayBuffer);
     newFileContent = originalFileContent.slice();
 
-    console.log(originalFileContent);
-    console.log(newFileContent);
-    //hexview(newFileContent);
     // Update MD5
     md5Hash = md5(newFileContent.buffer);
     document.getElementById("md5").innerHTML = md5Hash;
 
     // Update filename and filesize
+    document.getElementById("filename").innerHTML = file.name;
+    originalFileName = file.name;
     document.getElementById("filename").innerHTML = file.name;
     document.getElementById("filelength").innerHTML = file.size;
     // Show hidden csv and offset-group
@@ -109,7 +109,6 @@ document.getElementById("offset").oninput = () => {
   if (isNaN(offset)) offset = 0;
   document.getElementById("offsetDEC").innerHTML = offset;
   generateNewFile();
-  console.log(offset); // Do something
 };
 
 // ---------------- PARALLEL SCROLL
@@ -120,7 +119,6 @@ document.getElementById("values").addEventListener("scroll", function () {
 
 function generateNewFile() {
   str = document.getElementById("values").value;
-  console.log(str);
 
   var csvIndex;
   var csvData;
@@ -141,7 +139,6 @@ function generateNewFile() {
     if (hexPairRegex.test(line)) {
       csvIndex = Number("0x" + line.split(/[,:;-]/)[0]) - offset;
       csvData = Number("0x" + line.split(/[,:;-]/)[1]);
-      console.log(newFileContent.length);
       if (csvIndex >= 0 && csvIndex < newFileContent.length) {
         changes++;
         setByteAt(csvIndex + offset, csvData);
@@ -194,4 +191,10 @@ function generateNewFile() {
   document.getElementById("download_link").href = url;
 
   console.log(`Changes: ${changes}`);
+
+  function rotateArray(array, places) {
+    elementsCount = array.length;
+    places = places % elementsCount
+    return b = array.slice(places, elementsCount).concat(array.slice(0, places));
+  }
 }
