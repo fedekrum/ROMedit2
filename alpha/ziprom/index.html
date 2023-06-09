@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+    <title>Drag and Drop Zip File</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <div class="row">
+        <div class="col">
+          <h2>Drag and Drop Zip File</h2>
+          <div id="drop-zone" class="border p-5 mt-4">
+            <p>Drop a zip file here to decompress.</p>
+          </div>
+          <ul id="file-list" class="list-group mt-4"></ul>
+        </div>
+      </div>
+      <div class="mt-4">
+        <button id="download-btn" class="btn btn-primary">
+          Download Files as Zip
+        </button>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.6.0/jszip.min.js"></script>
+    <script>
+      var dropZone = document.getElementById("drop-zone");
+      var fileList = document.getElementById("file-list");
+      var zipFilename = ""; // Store the name of the zip file
+      var files = []; // Array to store the selected files
+
+      dropZone.addEventListener("dragover", function (e) {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+
+      dropZone.addEventListener("dragleave", function (e) {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+      });
+
+      dropZone.addEventListener("drop", function (e) {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+
+        files = Array.from(e.dataTransfer.files); // Store the selected files
+
+        for (var i = 0; i < files.length; i++) {
+          var file = files[i];
+
+          if (file.type === "application/zip") {
+            zipFilename = file.name; // Store the name of the uploaded zip file
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+              var arrayBuffer = e.target.result;
+
+              JSZip.loadAsync(arrayBuffer).then(function (zip) {
+                var filePromises = [];
+
+                zip.forEach(function (relativePath, zipEntry) {
+                  if (!zipEntry.dir && !relativePath.includes("/")) {
+                    var filePromise = zipEntry
+                      .async("arraybuffer")
+                      .then(function (content) {
+                        return {
+                          name: zipEntry.name,
+                          content: content,
+                        };
+                      });
+
+                    filePromises.push(filePromise);
+                  }
+                });
+
+                Promise.all(filePromises).then(function (fileArray) {
+                  displayFiles(fileArray);
+
+                  var downloadBtn = document.getElementById("download-btn");
+                  downloadBtn.addEventListener("click", function () {
+                    var zip = new JSZip();
+
+                    fileArray.forEach(function (file) {
+                      zip.file(file.name, file.content);
+                    });
+
+                    zip
+                      .generateAsync({ type: "blob", compression: "DEFLATE" })
+                      .then(function (blob) {
+                        var url = URL.createObjectURL(blob);
+                        var a = document.createElement("a");
+                        a.href = url;
+                        a.download = zipFilename; // Set the downloaded file name
+                        a.click();
+                      });
+                  });
+                });
+              });
+            };
+
+            reader.readAsArrayBuffer(file);
+          }
+        }
+      });
+
+      function displayFiles(files) {
+        fileList.innerHTML = "";
+
+        files.forEach(function (file) {
+          var li = document.createElement("li");
+          li.classList.add("list-group-item");
+          li.textContent = file.name;
+          fileList.appendChild(li);
+        });
+      }
+    </script>
+  </body>
+</html>
