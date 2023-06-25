@@ -9,7 +9,6 @@ var valuesStatus = "";
 var changes;
 var data;
 var offset = Number("0x" + document.getElementById("offset").value); //decimal
-const hexChain = ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '0a', '0b', '0c', '0d', '0e', '0f'];
 
 document.getElementById("offsetDEC").innerHTML = offset;
 
@@ -48,44 +47,6 @@ function handleFileSelect(event) {
     generateNewFile();
   };
   reader.readAsArrayBuffer(file);
-}
-
-function hexview(bytes) {
-  // Create the hex dump
-  let hexDump = "00010203 04050607 08090a0b 0c0d0e0f\n";
-  hexDump += "-------- -------- -------- --------\n";
-  let hexLine = "";
-  let asciiLine = "";
-  for (let i = 0; i < bytes.length; i++) {
-    // Convert byte to hex
-    let byteHex = bytes[i].toString(16).padStart(2, "0");
-    hexLine += byteHex;
-
-    // Convert byte to ASCII
-    let byteChar = bytes[i];
-    let char =
-      byteChar >= 0x20 && byteChar <= 0x7e
-        ? String.fromCharCode(byteChar)
-        : ".";
-    asciiLine += char;
-
-    // Add spaces after every 4 bytes
-    if ((i + 1) % 4 == 0) {
-      hexLine += " ";
-    }
-
-    // If last byte or if EOL
-    if (i == bytes.length - 1 || (i + 1) % 16 == 0) {
-      hexDump +=
-        hexLine.padEnd(36, " ") + "| " + asciiLine.padEnd(16, " ") + "\n";
-      asciiLine = "";
-      hexLine = "";
-    }
-  }
-
-  // Show the hex and ASCII dumps
-  let pre = document.getElementById("file-content");
-  pre.textContent = hexDump;
 }
 
 function setByteAt(indexStr, dataStr) {
@@ -177,7 +138,10 @@ function generateNewFile() {
   }
 
   document.getElementById("changes").innerHTML = changes;
-  hexview(newFileContent);
+
+  // Show the hex and ASCII dumps
+  let codeview = document.getElementById("file-content");
+  codeview.innerHTML = hexview(newFileContent, offset, "html");
 
   // ---------------- DOWNLOAD LINK GENERATOR (BLOB)
   //data = new Blob([newFileContent], { type: "application/octet-stream" });
@@ -192,9 +156,9 @@ function generateNewFile() {
 
   console.log(`Changes: ${changes}`);
 
-  function rotateArray(array, places) {
-    elementsCount = array.length;
-    places = places % elementsCount
-    return b = array.slice(places, elementsCount).concat(array.slice(0, places));
-  }
+  // function rotateArray(array, places) {
+  //   elementsCount = array.length;
+  //   places = places % elementsCount
+  //   return array.slice(places, elementsCount).concat(array.slice(0, places));
+  // }
 }
