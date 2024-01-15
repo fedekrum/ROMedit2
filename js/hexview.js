@@ -21,7 +21,7 @@ function hexview(bytes, offset = 0x0, format = "txt") {
 
   let hexLine = "";
   let asciiLine = "";
-  for (let i = 0; i < bytes.length; i++) {
+  for (let i = 0, bytesLength = bytes.length; i < bytesLength; i++) {
     // Convert byte to hex
     let byteHex = bytes[i].toString(16).padStart(2, "0");
     hexLine += byteHex;
