@@ -1,10 +1,9 @@
-// bytes:  is an array of any numbers of members
-//         wich are integer numbers from 0 to 255 (00-ff) 
+// bytes:  is an array of any number of members
+//         which are integer numbers from 0 to 255 (00-ff) 
 // offset: is a decimal number of the starting offset address
-//         of the code (eg. 0x1000 if hex)
+//         of the code (eg. 0x1000 in hex)
 
 function hexview(bytes, offset = 0x0, format = "txt") {
-  return;
   maxAddressDigits = (offset + (bytes.length)).toString(16);
   shift = Number("0x" + offset.toString(16).charAt(offset.toString(16).length - 1));
   maxAddressDigits = maxAddressDigits.length;
