@@ -92,7 +92,7 @@ function generateNewFile() {
   changes = 0;
   valuesStatus = "";
   var msg;
-  for (let i = 0; i < lines.length; i++) {
+  for (let i = 0, linesLength=lines.length; i < linesLength; i++) {
     msg = "✅";
     valuesStatus = valuesStatus + (i + 1) + " ";
     const line = lines[i].replace(/\s/g, ""); // Remove all whitespace from line
