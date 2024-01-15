@@ -4,7 +4,7 @@
 //         of the code (eg. 0x1000 if hex)
 
 function hexview(bytes, offset = 0x0, format = "txt") {
-
+  return;
   maxAddressDigits = (offset + (bytes.length)).toString(16);
   shift = Number("0x" + offset.toString(16).charAt(offset.toString(16).length - 1));
   maxAddressDigits = maxAddressDigits.length;
