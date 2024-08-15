@@ -17,3 +17,14 @@
   font-family: AndaleMono, Monaco, monospace;
   /* display: inline-block; */
 }
+
+#file-content1 {
+  font-family: AndaleMono, Monaco, monospace;
+  white-space: pre-wrap;
+  /* display: inline-block; */
+}
+
+#file-content2 {
+  font-family: AndaleMono, Monaco, monospace;
+  /* display: inline-block; */
+}
