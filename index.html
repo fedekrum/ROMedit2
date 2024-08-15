@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>File Drag and Drop with ZIP Download</title>
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS for styling and layout -->
     <link href="bootstrap.min.css" rel="stylesheet" />
+    <!-- Custom styles for additional layout tweaks -->
     <link href="style.css" rel="stylesheet" />
     <style>
+      /* Styling for the drag-and-drop area */
       .drag-area {
         border: 2px dashed #007bff;
         padding: 20px;
@@ -15,12 +17,15 @@
         border-radius: 5px;
         background-color: #f8f9fa;
       }
+      /* Styling when the drag area is active (file being dragged over) */
       .drag-area.dragover {
         background-color: #e9ecef;
       }
+      /* Margin for the file list section */
       .file-list {
         margin-top: 20px;
       }
+      /* Switch styling for the hash algorithm toggle */
       .switch {
         position: relative;
         display: inline-block;
@@ -32,6 +37,7 @@
         width: 0;
         height: 0;
       }
+      /* Slider styling for the switch */
       .slider {
         position: absolute;
         cursor: pointer;
@@ -54,6 +60,7 @@
         transition: 0.4s;
         border-radius: 50%;
       }
+      /* Styling for the slider when the switch is checked */
       input:checked + .slider {
         background-color: #007bff;
       }
@@ -66,8 +73,10 @@
     <div class="container mt-5">
       <div class="row justify-content-center">
         <div class="col-md-6">
+          <!-- Section for hash algorithm toggle and drag-and-drop area -->
           <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
+              <!-- Toggle switch for selecting hash algorithm (SHA-1/MD5) -->
               <label class="switch">
                 <input type="checkbox" id="hash-switch" />
                 <span class="slider"></span>
@@ -75,10 +84,12 @@
               <span id="hash-algorithm-label">SHA-1</span>
             </div>
           </div>
+          <!-- Drag-and-drop area for files -->
           <div id="drag-area" class="drag-area">
             <h4>Drag & Drop your file here</h4>
             <p>or click to select a file</p>
           </div>
+          <!-- Dropdown menu for selecting a file from the uploaded list -->
           <div class="mt-3">
             <select
               id="file-select"
@@ -88,8 +99,11 @@
               <option value="">Select a file</option>
             </select>
           </div>
+          <!-- Container to display selected file information -->
           <div id="file-info" class="file-list mt-3"></div>
+          <!-- Container to display selected file's hex dump content -->
           <div id="file-content" class="file-list mt-3"></div>
+          <!-- Button to download all files as a ZIP archive -->
           <button id="download-zip-button" class="btn btn-success mt-3">
             Download ZIP with All Files
           </button>
@@ -100,18 +114,19 @@
     <!-- Bootstrap JS and dependencies -->
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="js/bootstrap.bundle.min.js"></script>
-    <!-- JSZip and jsSHA Libraries -->
+    <!-- JSZip and jsSHA Libraries for handling ZIP files and hashing -->
     <script src="js/jszip.min.js"></script>
     <script src="js/sha.min.js"></script>
     <script src="js/md5.min.js"></script>
 
-    <!-- HexView JS -->
+    <!-- HexView JS for displaying hex dump of file content -->
     <script src="hexview.js"></script>
 
-    <!-- FilesHolder JS -->
+    <!-- FilesHolder JS for managing file operations -->
     <script src="filesHolder.js"></script>
 
     <script>
+      // DOM elements for interaction
       const dragArea = document.getElementById("drag-area");
       const fileSelect = document.getElementById("file-select");
       const fileInfo = document.getElementById("file-info");
@@ -120,35 +135,41 @@
         "hash-algorithm-label"
       );
       const hashSwitch = document.getElementById("hash-switch");
+
+      // Instance of FilesHolder class to manage files and hashing
       const filesHolder = new FilesHolder();
 
+      // Event listener to toggle between SHA-1 and MD5 hash algorithms
       hashSwitch.addEventListener("change", async () => {
         const algorithm = hashSwitch.checked ? "MD5" : "SHA-1";
         filesHolder.setHashAlgorithm(algorithm);
         hashAlgorithmLabel.textContent = algorithm;
-        await filesHolder.recalculateAllHashes(); // Recalculate all hashes based on the new algorithm
-        displayFileInfo(fileSelect.value); // Update displayed hash for the selected file
+        await filesHolder.recalculateAllHashes(); // Recalculate hashes based on selected algorithm
+        displayFileInfo(fileSelect.value); // Update displayed file info
       });
 
+      // Event listener to handle drag-and-drop of files
       dragArea.addEventListener("dragover", (event) => {
         event.preventDefault();
         dragArea.classList.add("dragover");
       });
 
+      // Remove dragover styling when the file is no longer dragged over the area
       dragArea.addEventListener("dragleave", () => {
         dragArea.classList.remove("dragover");
       });
 
+      // Handle files dropped onto the drag area
       dragArea.addEventListener("drop", async (event) => {
         event.preventDefault();
         dragArea.classList.remove("dragover");
         const files = event.dataTransfer.files;
         try {
           for (let file of files) {
-            await filesHolder.addFile(file);
+            await filesHolder.addFile(file); // Add each dropped file to the FilesHolder
           }
-          updateFileSelect();
-          // Automatically select the first file
+          updateFileSelect(); // Update the file selection dropdown
+          // Automatically select and display the first file in the list
           if (fileSelect.options.length > 1) {
             fileSelect.value = fileSelect.options[1].value;
             displayFileInfo(fileSelect.value);
@@ -158,6 +179,7 @@
         }
       });
 
+      // Handle click on the drag area to trigger file input dialog
       dragArea.addEventListener("click", () => {
         const input = document.createElement("input");
         input.type = "file";
@@ -166,10 +188,10 @@
           const files = input.files;
           try {
             for (let file of files) {
-              await filesHolder.addFile(file);
+              await filesHolder.addFile(file); // Add selected files to the FilesHolder
             }
-            updateFileSelect();
-            // Automatically select the first file
+            updateFileSelect(); // Update the file selection dropdown
+            // Automatically select and display the first file in the list
             if (fileSelect.options.length > 1) {
               fileSelect.value = fileSelect.options[1].value;
               displayFileInfo(fileSelect.value);
@@ -178,13 +200,15 @@
             console.error("Error selecting files:", error);
           }
         };
-        input.click();
+        input.click(); // Simulate click on hidden file input
       });
 
+      // Event listener to display information when a file is selected from the dropdown
       fileSelect.addEventListener("change", () => {
         displayFileInfo(fileSelect.value);
       });
 
+      // Function to update the file hash and display updated info
       async function updateFileHash(fileName) {
         try {
           await filesHolder.updateEditableHash(fileName);
@@ -197,6 +221,7 @@
         }
       }
 
+      // Function to update the file selection dropdown with the list of uploaded files
       function updateFileSelect() {
         const fileNames = filesHolder.getFileNames();
         fileSelect.innerHTML = `<option value="">Select a file</option>`;
@@ -208,6 +233,7 @@
         });
       }
 
+      // Function to display the selected file's information and content
       function displayFileInfo(fileName) {
         fileInfo.innerHTML = ""; // Clear previous info
         fileContent.innerHTML = ""; // Clear previous content
@@ -245,6 +271,7 @@
         fileContent.innerHTML = hexDump;
       }
 
+      // Event listener to download all files as a ZIP archive
       document
         .getElementById("download-zip-button")
         .addEventListener("click", async () => {
