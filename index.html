@@ -6,6 +6,7 @@
     <title>File Drag and Drop with ZIP Download</title>
     <!-- Bootstrap CSS -->
     <link href="bootstrap.min.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet" />
     <style>
       .drag-area {
         border: 2px dashed #007bff;
@@ -103,12 +104,13 @@
     <script src="js/jszip.min.js"></script>
     <script src="js/sha.min.js"></script>
     <script src="js/md5.min.js"></script>
+
     <!-- HexView JS -->
     <script src="hexview.js"></script>
+
     <!-- FilesHolder JS -->
     <script src="filesHolder.js"></script>
 
-    <!-- Custom Script -->
     <script>
       const dragArea = document.getElementById("drag-area");
       const fileSelect = document.getElementById("file-select");
@@ -183,6 +185,18 @@
         displayFileInfo(fileSelect.value);
       });
 
+      async function updateFileHash(fileName) {
+        try {
+          await filesHolder.updateEditableHash(fileName);
+          displayFileInfo(fileName);
+        } catch (error) {
+          console.error(
+            `Error updating file ${filesHolder.hashAlgorithm} hash:`,
+            error
+          );
+        }
+      }
+
       function updateFileSelect() {
         const fileNames = filesHolder.getFileNames();
         fileSelect.innerHTML = `<option value="">Select a file</option>`;
@@ -203,26 +217,26 @@
         if (!file) return;
 
         const fileDetails = `
-          <div class="card mb-2">
-              <div class="card-body">
-                  <h5 class="card-title">${file.name}</h5>
-                  <p class="card-text"><strong>Size:</strong> ${
-                    file.size
-                  } bytes</p>
-                  <p class="card-text"><strong>Original ${
-                    filesHolder.hashAlgorithm
-                  }:</strong> ${file.originalHash}</p>
-                  <p class="card-text"><strong>Editable ${
-                    filesHolder.hashAlgorithm
-                  }:</strong> ${file.editableHash}</p>
-                  ${
-                    file.zipFileName
-                      ? `<p class="card-text"><strong>Contained in ZIP:</strong> ${file.zipFileName}</p>`
-                      : ""
-                  }
-              </div>
-          </div>
-      `;
+        <div class="card mb-2">
+            <div class="card-body">
+                <h5 class="card-title">${file.name}</h5>
+                <p class="card-text"><strong>Size:</strong> ${
+                  file.size
+                } bytes</p>
+                <p class="card-text"><strong>Original ${
+                  filesHolder.hashAlgorithm
+                }:</strong> ${file.originalHash}</p>
+                <p class="card-text"><strong>Editable ${
+                  filesHolder.hashAlgorithm
+                }:</strong> ${file.editableHash}</p>
+                ${
+                  file.zipFileName
+                    ? `<p class="card-text"><strong>Contained in ZIP:</strong> ${file.zipFileName}</p>`
+                    : ""
+                }
+            </div>
+        </div>
+    `;
 
         fileInfo.innerHTML = fileDetails;
 

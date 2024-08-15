@@ -1,4 +1,3 @@
-// FilesHolder.js
 class FilesHolder {
   constructor() {
     this.files = [];
@@ -20,8 +19,29 @@ class FilesHolder {
         return md5(arrayBuffer); // Using md5.min.js library for MD5 hashing
       }
     } catch (error) {
-      console.error(`Error calculating ${this.hashAlgorithm} hash:`, error);
+      console.error(
+        `Error calculating ${this.hashAlgorithm} hash:`,
+        error
+      );
       throw error;
+    }
+  }
+
+  async recalculateAllHashes() {
+    try {
+      for (const file of this.files) {
+        file.originalHash = await this.calculateHash(
+          file.originalData.buffer
+        );
+        file.editableHash = await this.calculateHash(
+          file.editableData.buffer
+        );
+      }
+    } catch (error) {
+      console.error(
+        `Error recalculating ${this.hashAlgorithm} hashes:`,
+        error
+      );
     }
   }
 
@@ -64,8 +84,12 @@ class FilesHolder {
 
       for (let fileName in zip.files) {
         if (!zip.files[fileName].dir && !fileName.startsWith(".")) {
-          const zipFileData = await zip.files[fileName].async("uint8array");
-          const originalHash = await this.calculateHash(zipFileData.buffer);
+          const zipFileData = await zip.files[fileName].async(
+            "uint8array"
+          );
+          const originalHash = await this.calculateHash(
+            zipFileData.buffer
+          );
 
           this.files.push({
             name: fileName,
@@ -92,12 +116,28 @@ class FilesHolder {
     }
   }
 
+  async updateEditableHash(fileName) {
+    try {
+      const file = this.files.find((f) => f.name === fileName);
+      if (file) {
+        const editableHash = await this.calculateHash(
+          file.editableData.buffer
+        );
+        file.editableHash = editableHash;
+      } else {
+        throw new Error(`File with name "${fileName}" not found.`);
+      }
+    } catch (error) {
+      console.error(`Error updating ${this.hashAlgorithm} hash:`, error);
+    }
+  }
+
   getFiles() {
     return this.files;
   }
 
-  getFile(fileName) {
-    return this.files.find((file) => file.name === fileName);
+  getFileNames() {
+    return this.files.map((file) => file.name);
   }
 
   clearFiles() {
@@ -121,5 +161,9 @@ class FilesHolder {
 
   getZipFileName() {
     return this.zipFileName;
+  }
+
+  getFile(fileName) {
+    return this.files.find((file) => file.name === fileName);
   }
 }
