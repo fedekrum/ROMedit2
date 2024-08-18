@@ -1,7 +1,28 @@
 class FilesManager {
   constructor() {
     this.files = []; // Initialize files array
-    this.zipFileName = "files.zip"; // Default ZIP file name
+    this.downloadFileName = "file"; // Default download file name
+  }
+
+  /**
+   * Sets the name of the downloaded file or ZIP archive.
+   *
+   * @param {string} downloadFileName - The desired name of the downloaded file or ZIP archive.
+   * @throws {Error} If the provided name is not valid.
+   * @return {void}
+   */
+  setDownloadFileName(downloadFileName) {
+    if (!this.#isValidFileName(downloadFileName)) {
+      throw new Error("Invalid file name. Must be a valid string without illegal characters.");
+    }
+
+    // Remove any trailing ".zip" extensions (case-insensitive)
+    while (downloadFileName.toLowerCase().endsWith(".zip")) {
+      downloadFileName = downloadFileName.slice(0, -4).trim();
+    }
+
+    // Set the final download file name
+    this.downloadFileName = downloadFileName;
   }
 
   /**
@@ -61,7 +82,6 @@ class FilesManager {
     await Promise.all(hashPromises);
   }
 
-
   /**
    * Retrieves an array of names of all files stored in the instance.
    *
@@ -69,48 +89,6 @@ class FilesManager {
    */
   getFileNames() {
     return this.files.map((file) => file.name);
-  }
-
-  /**
- * Returns the name of the ZIP file.
- *
- * @return {string} The name of the ZIP file.
- */
-  getZipFileName() {
-    return this.zipFileName;
-  }
-
-  /**
-   * Sets the name of the ZIP file, ensuring it is a valid string and ends with a single ".zip" extension.
-   *
-   * @param {string} zipFileName - The desired name of the ZIP file.
-   * @throws {Error} If the provided ZIP file name is not a string or is invalid after processing.
-   * @return {void}
-   */
-  setZipFileName(zipFileName) {
-    if (typeof zipFileName !== 'string') {
-      const errorMessage = "Invalid ZIP file name. Provided value is not a string.";
-      console.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    // Normalize the string by trimming whitespace
-    zipFileName = zipFileName.trim();
-
-    // Remove all trailing ".zip" extensions (case-insensitive)
-    while (zipFileName.toLowerCase().endsWith(".zip")) {
-      zipFileName = zipFileName.slice(0, -4).trim();
-    }
-
-    // Check if the remaining name is empty after processing
-    if (zipFileName === "") {
-      const errorMessage = "Invalid ZIP file name. Resulting string is empty after removing extensions.";
-      console.error(errorMessage);
-      throw new Error(errorMessage);
-    }
-
-    // Set the property with exactly one ".zip" extension
-    this.zipFileName = zipFileName + ".zip";
   }
 
 
@@ -155,13 +133,61 @@ class FilesManager {
   }
 
   /**
+   * Downloads the files. If there's only one file, download it directly.
+   * If there are multiple files, create and download a ZIP archive.
+   *
+   * @return {Promise<void>} A promise that resolves when the download starts.
+   */
+  async downloadFile() {
+    if (this.files.length === 0) {
+      console.warn("No files to download.");
+      return;
+    }
+
+    if (this.files.length === 1) {
+      // Download the single file directly
+      const file = this.files[0];
+      const url = URL.createObjectURL(file.editableData);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } else {
+      // Create and download a ZIP file containing all files
+      const zip = new JSZip();
+      for (const file of this.files) {
+        zip.file(file.name, file.editableData);
+      }
+
+      try {
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+        const url = URL.createObjectURL(zipBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = this.downloadFileName + ".zip";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error("Error generating ZIP file:", error);
+        throw new Error("Failed to generate ZIP file.");
+      }
+    }
+  }
+
+
+
+  /**
    * ************************************************************************
    * PRIVATE METHODS
    * Do not call these methods directly.
    * Instead, call the corresponding public method.
    * ************************************************************************
    */
-
 
   /**
    * Calculates the MD5 for a given Blob.
