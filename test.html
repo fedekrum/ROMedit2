@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FilesManager Test</title>
+  </head>
+  <body>
+    <h1>FilesManager Test</h1>
+    <p>Check the console for test results.</p>
+
+    <script src="filesManager.js"></script>
+    <script src="js/md5.min.js"></script>
+    <script src="js/sha.min.js"></script>
+    <!-- Reference to your FilesManager.js file -->
+    <script>
+      // Test Script for FilesManager Class
+
+      // Step 1: Create an instance of FilesManager
+      const filesManager = new FilesManager();
+      console.log("FilesManager instance created.");
+
+      // Step 2: Add a valid file to the files array
+      const fileBlob1 = new Blob(["Hello, world!"], { type: "text/plain" });
+      filesManager
+        .addFile(fileBlob1, "hello.txt")
+        .then(() => {
+          console.log("File 'hello.txt' added successfully.");
+
+          // Step 3: Add another valid file to the files array
+          const fileBlob2 = new Blob(["Another file content"], {
+            type: "text/plain",
+          });
+          return filesManager.addFile(fileBlob2, "another.txt");
+        })
+        .then(() => {
+          console.log("File 'another.txt' added successfully.");
+
+          // Step 4: Attempt to add a file with an invalid name
+          const fileBlob3 = new Blob(["Invalid file name content"], {
+            type: "text/plain",
+          });
+          return filesManager
+            .addFile(fileBlob3, "invalid|name.txt")
+            .catch((error) => {
+              console.error("Error adding 'invalid|name.txt':", error.message);
+            });
+        })
+        .then(() => {
+          // Step 5: Recalculate hashes for all files
+          filesManager.recalculateAllHashes();
+          console.log("Hashes recalculated for all files.");
+
+          // Step 6: Retrieve and log all file names
+          const fileNames = filesManager.getFileNames();
+          console.log("Retrieved file names:", fileNames);
+
+          // Step 7: Set a valid ZIP file name
+          filesManager.setZipFileName("archive.zip");
+          console.log("ZIP file name set to:", filesManager.getZipFileName());
+
+          // Step 8: Attempt to set an invalid ZIP file name
+          try {
+            filesManager.setZipFileName("invalid|name.zip");
+          } catch (error) {
+            console.error("Error setting ZIP file name:", error.message);
+          }
+
+          // Step 9: Retrieve and log the final ZIP file name
+          console.log("Final ZIP file name:", filesManager.getZipFileName());
+        });
+    </script>
+  </body>
+</html>

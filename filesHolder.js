@@ -104,6 +104,7 @@ class FilesHolder {
           zipFileName: null,
           originalData: uint8Array,
           editableData: uint8Array.slice(),
+          offset: 0
         });
       }
     } catch (error) {
@@ -241,4 +242,37 @@ class FilesHolder {
   getFile(fileName) {
     return this.files.find((file) => file.name === fileName);
   }
+
+  /**
+   * Retrieves the offset of a specific file by its name.
+   * 
+   * @param {string} fileName - The name of the file to retrieve the offset of.
+   * @returns {string} - The offset as a hexadecimal string.
+   * @throws Will throw an error if the file cannot be found.
+  */
+  getFileOffset(fileName) {
+    const file = this.files.find((file) => file.name === fileName);
+    if (file) {
+      return file.offset.toString(16); // Convert to hexadecimal string
+    } else {
+      throw new Error(`File with name "${fileName}" not found.`);
+    }
+  }
+
+  /**
+   * Sets the offset of a specific file by its name.
+   * 
+   * @param {string} fileName - The name of the file to set the offset of.
+   * @param {string} offset - The offset as a hexadecimal string.
+   * @throws Will throw an error if the file cannot be found.
+   */
+  setFileOffset(fileName, offset) {
+    const file = this.files.find((file) => file.name === fileName);
+    if (file) {
+      file.offset = parseInt(offset, 16); // Parse hexadecimal string to integer
+    } else {
+      throw new Error(`File with name "${fileName}" not found.`);
+    }
+  }
+
 }
