@@ -4,117 +4,79 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>File Drag and Drop with ZIP Download</title>
-    <!-- Bootstrap CSS for styling and layout -->
-    <link href="css/bootstrap.min.css" rel="stylesheet" />
-    <!-- Custom styles for additional layout tweaks -->
-    <link href="css/style.css" rel="stylesheet" />
-    <style>
-      /* Styling for the drag-and-drop area */
-      .drag-area {
-        border: 2px dashed #007bff;
-        padding: 20px;
-        text-align: center;
-        border-radius: 5px;
-        background-color: #f8f9fa;
-      }
-      /* Styling when the drag area is active (file being dragged over) */
-      .drag-area.dragover {
-        background-color: #e9ecef;
-      }
-      /* Margin for the file list section */
-      .file-list {
-        margin-top: 20px;
-      }
-      /* Switch styling for the hash algorithm toggle */
-      .switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-      }
-      .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-      }
-      /* Slider styling for the switch */
-      .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #ccc;
-        transition: 0.4s;
-        border-radius: 34px;
-      }
-      .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white;
-        transition: 0.4s;
-        border-radius: 50%;
-      }
-      /* Styling for the slider when the switch is checked */
-      input:checked + .slider {
-        background-color: #007bff;
-      }
-      input:checked + .slider:before {
-        transform: translateX(26px);
-      }
-    </style>
+    <!-- Tailwind CSS CDN -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="/src/tailwind.css" rel="stylesheet" />
   </head>
-  <body>
-    <div class="container mt-5">
-      <div class="row justify-content-center">
-        <div class="col-md-6">
-          <!-- Section for hash algorithm toggle and drag-and-drop area -->
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-              <!-- Toggle switch for selecting hash algorithm (SHA-1/MD5) -->
-              <label class="switch">
-                <input type="checkbox" id="hash-switch" />
-                <span class="slider"></span>
-              </label>
-              <span id="hash-algorithm-label">SHA-1</span>
-            </div>
-          </div>
-          <!-- Drag-and-drop area for files -->
-          <div id="drag-area" class="drag-area">
-            <h4>Drag & Drop your file here</h4>
-            <p>or click to select a file</p>
-          </div>
-          <!-- Dropdown menu for selecting a file from the uploaded list -->
-          <div class="mt-3">
-            <select
-              id="file-select"
-              class="form-select"
-              aria-label="Select a file"
-            >
-              <option value="">Select a file</option>
-            </select>
-          </div>
-          <!-- Container to display selected file information -->
-          <div id="file-info" class="file-list mt-3"></div>
-          <!-- Container to display selected file's hex dump content -->
-          <div id="file-content" class="file-list mt-3"></div>
-          <!-- Button to download all files as a ZIP archive -->
-          <button id="download-zip-button" class="btn btn-success mt-3">
-            Download ZIP with All Files
+  <body class="bg-gray-100 min-w-[375px] w-full">
+    <!--  -->
+    <div>
+      <h1 class="text-3xl font-bold text-center text-gray-700 m-1">
+        ROMedit v.2
+      </h1>
+    </div>
+
+    <!-- --------------- Drag-and-drop area for files --------------- -->
+    <div
+      id="drag-area"
+      class="border-4 border-blue-500 border-dashed p-5 text-center rounded-md bg-gray-50 hover:bg-gray-200 transition"
+    >
+      <h4 class="text-lg font-semibold text-gray-700">
+        Drag & Drop your files here
+      </h4>
+      <p class="text-sm text-gray-500">or click to select files</p>
+    </div>
+
+    <!-- Container to hold both divs in a flex layout with the new xs breakpoint -->
+    <div class="flex items-start gap-2 mt-3 sm:flex-row flex-col w-full">
+      <!-- --------------- Dropdown menu for selecting a file --------------- -->
+      <div class="flex-grow sm:w-auto w-full">
+        <select
+          id="file-select"
+          class="block w-full p-2 border border-gray-300 rounded font-mono"
+          aria-label="Select a file"
+        >
+          <option value="">Select a file</option>
+        </select>
+      </div>
+
+      <!-- --------------- Toggle switch (SHA-1/MD5) --------------- -->
+      <div class="flex-shrink-0 min-w-[178px] w-14 self-start">
+        <div
+          class="shadow rounded-full border h-10 flex p-1 relative items-center bg-blue-400 text-white"
+        >
+          <span class="w-full flex justify-center">MD5</span>
+          <span class="w-full flex justify-center">SHA-1</span>
+          <button
+            class="elSwitch bg-white shadow text-gray-800 flex items-center justify-center w-1/2 rounded-full h-8 transition-all top-[px] absolute left-1"
+          >
+            Hashing
           </button>
         </div>
       </div>
     </div>
 
-    <!-- Bootstrap JS and dependencies -->
-    <script src="js/jquery-3.6.0.min.js"></script>
-    <script src="js/bootstrap.bundle.min.js"></script>
-    <!-- JSZip and jsSHA Libraries for handling ZIP files and hashing -->
+    <!-- --------------- File information --------------- -->
+    <div id="file-info" class="mt-3 font-mono text-base"></div>
+
+    <!-- --------------- Download button --------------- -->
+    <button
+      id="download-button"
+      class="w-full mt-3 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition"
+    >
+      Download ZIP with All Files
+    </button>
+    <!-- --------------- HEX dump content --------------- -->
+    <div data-collapsible="HEX dump" collapsible-not-collapsed>
+      <div
+        id="file-content"
+        class="bg-orange-200 m-[1px] font-mono text-dynamic"
+      ></div>
+    </div>
+
+    <!-- -------------------------------------------------------------- -->
+    <!--                           JS Files                             -->
+    <!-- -------------------------------------------------------------- -->
     <script src="js/jszip.min.js"></script>
     <script src="js/sha.min.js"></script>
     <script src="js/md5.min.js"></script>
@@ -131,38 +93,48 @@
       const fileSelect = document.getElementById("file-select");
       const fileInfo = document.getElementById("file-info");
       const fileContent = document.getElementById("file-content");
-      const hashAlgorithmLabel = document.getElementById(
-        "hash-algorithm-label"
-      );
-      const hashSwitch = document.getElementById("hash-switch");
 
       // Instance of FilesHolder class to manage files and hashing
       const filesHolder = new FilesHolder();
 
       // Event listener to toggle between SHA-1 and MD5 hash algorithms
-      hashSwitch.addEventListener("change", async () => {
-        const algorithm = hashSwitch.checked ? "MD5" : "SHA-1";
-        filesHolder.setHashAlgorithm(algorithm);
-        hashAlgorithmLabel.textContent = algorithm;
-        await filesHolder.recalculateAllHashes(); // Recalculate hashes based on selected algorithm
-        displayFileInfo(fileSelect.value); // Update displayed file info
+
+      const elSwitchs = document.querySelectorAll(".elSwitch");
+      elSwitchs.forEach((e) => {
+        var algorithm;
+        e.addEventListener("click", function () {
+          if (e.classList.contains("left-[84px]")) {
+            e.classList.remove("left-[84px]");
+            e.classList.add("left-1");
+            console.log("SHA-1");
+            algorithm = "SHA-1";
+          } else {
+            e.classList.remove("left-1");
+            e.classList.add("left-[84px]");
+            console.log("MD5");
+            algorithm = "MD5";
+          }
+          filesHolder.setHashAlgorithm(algorithm);
+          filesHolder.recalculateAllHashes(); // Recalculate hashes based on selected algorithm
+          displayFileInfo(fileSelect.value); // Update displayed file info
+        });
       });
 
       // Event listener to handle drag-and-drop of files
       dragArea.addEventListener("dragover", (event) => {
         event.preventDefault();
-        dragArea.classList.add("dragover");
+        dragArea.classList.add("bg-gray-200");
       });
 
       // Remove dragover styling when the file is no longer dragged over the area
       dragArea.addEventListener("dragleave", () => {
-        dragArea.classList.remove("dragover");
+        dragArea.classList.remove("bg-gray-200");
       });
 
       // Handle files dropped onto the drag area
       dragArea.addEventListener("drop", async (event) => {
         event.preventDefault();
-        dragArea.classList.remove("dragover");
+        dragArea.classList.remove("bg-gray-200");
         const files = event.dataTransfer.files;
         try {
           for (let file of files) {
@@ -236,33 +208,31 @@
       // Function to display the selected file's information and content
       function displayFileInfo(fileName) {
         fileInfo.innerHTML = ""; // Clear previous info
+        console.log(fileContent.innerHTML);
         fileContent.innerHTML = ""; // Clear previous content
+        console.log(fileContent.innerHTML);
         if (!fileName) return;
 
         const file = filesHolder.getFile(fileName);
         if (!file) return;
 
         const fileDetails = `
-        <div class="card mb-2">
-            <div class="card-body">
-                <h5 class="card-title">${file.name}</h5>
-                <p class="card-text"><strong>Size:</strong> ${
-                  file.size
-                } bytes</p>
-                <p class="card-text"><strong>Original ${
-                  filesHolder.hashAlgorithm
-                }:</strong> ${file.originalHash}</p>
-                <p class="card-text"><strong>Editable ${
-                  filesHolder.hashAlgorithm
-                }:</strong> ${file.editableHash}</p>
-                ${
-                  file.zipFileName
-                    ? `<p class="card-text"><strong>Contained in ZIP:</strong> ${file.zipFileName}</p>`
-                    : ""
-                }
-            </div>
-        </div>
-    `;
+          <div class="bg-white shadow rounded-lg p-4 mb-4 font-mono">
+              <h5 class="font-semibold text-lg">${file.name}</h5>
+              <p class="text-sm"><strong>Size:</strong> ${file.size} bytes</p>
+              <p class="text-sm"><strong>Original ${
+                filesHolder.hashAlgorithm
+              }:</strong> ${file.originalHash}</p>
+              <p class="text-sm"><strong>Editable ${
+                filesHolder.hashAlgorithm
+              }:</strong> ${file.editableHash}</p>
+              ${
+                file.zipFileName
+                  ? `<p class="text-sm"><strong>Contained in ZIP:</strong> ${file.zipFileName}</p>`
+                  : ""
+              }
+          </div>
+      `;
 
         fileInfo.innerHTML = fileDetails;
 
@@ -273,7 +243,7 @@
 
       // Event listener to download all files as a ZIP archive
       document
-        .getElementById("download-zip-button")
+        .getElementById("download-button")
         .addEventListener("click", async () => {
           try {
             const zipBlob = await filesHolder.generateZipFile();

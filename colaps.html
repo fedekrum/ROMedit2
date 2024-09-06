@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dynamic Collapsible Menus</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100">
+    <!-- Static elements for layout -->
+    <div class="w-full h-10 bg-orange-200 border rounded shadow"></div>
+
+    <!-- Mark elements to be wrapped with the collapsible structure -->
+    <div data-collapsible="Info">
+      <p>
+        This is some content inside the collapsible menu. Add your text, images,
+        or any other elements here. This is some content inside the collapsible
+        menu. Add your text, images, or any other elements here. This is some
+        content inside the collapsible menu. Add your text, images, or any other
+        elements here. This is some content inside the collapsible menu. Add
+        your text, images, or any other elements here. This is some content
+        inside the collapsible menu. Add your text, images, or any other
+        elements here.
+      </p>
+    </div>
+
+    <div data-collapsible="Drag Area" collapsible-not-collapsed>
+      <!-- --------------- Drag-and-drop area for files --------------- -->
+      <div
+        data-collapsible
+        id="drag-area"
+        class="border-4 border-blue-500 border-dashed p-5 text-center rounded-md bg-gray-50 hover:bg-gray-200 transition"
+      >
+        <h4 class="text-lg font-semibold text-gray-700">
+          Drag & Drop your files here
+        </h4>
+        <p class="text-sm text-gray-500">or click to select files</p>
+      </div>
+    </div>
+
+    <div class="w-full h-10 bg-orange-200 border rounded shadow"></div>
+
+    <!-- JavaScript to dynamically wrap content -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Selecciona todos los elementos con el atributo data-collapsible
+        const collapsibleElements =
+          document.querySelectorAll("[data-collapsible]");
+
+        collapsibleElements.forEach((element, index) => {
+          const title =
+            element.getAttribute("data-collapsible") || `Sección ${index + 1}`;
+          const isCollapsed = element.hasAttribute("collapsible-collapsed");
+          const isNotCollapsed = element.hasAttribute(
+            "collapsible-not-collapsed"
+          );
+
+          // Crea la estructura de colapsable
+          const wrapper = document.createElement("div");
+          wrapper.className = "border rounded shadow relative";
+
+          const header = document.createElement("div");
+          header.className =
+            "flex justify-between items-center px-2 py-2 bg-blue-500 text-white rounded-t cursor-pointer header";
+          header.innerHTML = `
+          <span>${title}</span>
+          <svg class="w-5 h-5 transition-transform transform icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+          </svg>`;
+
+          const contentWrapper = document.createElement("div");
+          contentWrapper.className = `overflow-hidden transition-all duration-300 content relative ${
+            isNotCollapsed ? "max-h-[500px] min-h-[40px]" : "max-h-0"
+          }`;
+
+          // Expande el contenido por defecto si está marcado como no colapsado
+          if (isNotCollapsed) {
+            header.classList.add("hidden");
+          }
+
+          contentWrapper.innerHTML = element.innerHTML;
+
+          const collapseIcon = document.createElement("div");
+          collapseIcon.className = `absolute top-0 right-0 w-10 h-10 bg-blue-500 bg-opacity-30 hover:bg-opacity-100 text-white flex items-center justify-center cursor-pointer collapse-icon transition-transform rounded-sm ${
+            isNotCollapsed ? "" : "hidden"
+          }`;
+          collapseIcon.innerHTML = `
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+          </svg>`;
+
+          contentWrapper.appendChild(collapseIcon);
+          wrapper.appendChild(header);
+          wrapper.appendChild(contentWrapper);
+
+          // Reemplaza el elemento original con el nuevo colapsable
+          element.replaceWith(wrapper);
+
+          // Agrega eventos para alternar el colapsado
+          header.addEventListener("click", () =>
+            toggleCollapse(header, contentWrapper, collapseIcon)
+          );
+          collapseIcon.addEventListener("click", () =>
+            toggleCollapse(header, contentWrapper, collapseIcon)
+          );
+        });
+
+        // Manipula el contenido después de la creación de colapsables
+        const xxx = document.getElementById("drag-area");
+      });
+
+      function toggleCollapse(header, content, collapseIcon) {
+        const icon = header.querySelector(".icon");
+
+        if (content.classList.contains("max-h-0")) {
+          // Expande el contenido
+          header.classList.add("hidden");
+          collapseIcon.classList.remove("hidden");
+
+          // Expande el contenido con un pequeño retraso para una animación más suave
+          setTimeout(() => {
+            content.classList.remove("max-h-0");
+            content.classList.add("max-h-[500px]");
+            content.classList.add("min-h-[40px]");
+            icon.classList.add("rotate-180");
+            collapseIcon.classList.add("rotate-180");
+          }, 10); // Ajusta el retraso para asegurar una transición suave
+        } else {
+          // Colapsa el contenido
+          collapseIcon.classList.remove("rotate-180");
+          collapseIcon.classList.add("hidden");
+          content.classList.add("max-h-0");
+          content.classList.remove("max-h-[500px]");
+          content.classList.remove("min-h-[40px]");
+
+          // Muestra el header después de que la animación de colapsar se complete
+          setTimeout(() => {
+            header.classList.remove("hidden");
+            icon.classList.remove("rotate-180");
+          }, 300); // Retraso que coincide con la duración de la animación
+        }
+      }
+    </script>
+  </body>
+</html>
