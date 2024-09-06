@@ -10,24 +10,19 @@
   </head>
   <body class="bg-gray-100 min-w-[375px] w-full">
     <!--  -->
-    <div>
-      <h1 class="text-3xl font-bold text-center text-gray-700 m-1">
-        ROMedit v.2
-      </h1>
-    </div>
-
     <!-- Container to hold both divs in a flex layout with the new xs breakpoint -->
-    <div class="flex items-start gap-2 mt-3 flex-row w-full">
-      <!-- --------------- Drag-and-drop area for files --------------- -->
-      <div
-        id="drag-area"
-        class="border-4 border-blue-500 border-dashed p-5 text-center rounded-md bg-gray-50 hover:bg-gray-200 transition w-[40%]"
-      >
-        <h4 class="text-lg font-semibold text-gray-700">Drag & Drop files</h4>
-        <p class="text-sm text-gray-500">or click to browse</p>
-      </div>
-      <!-- --------------- Toggle switch (SHA-1/MD5) --------------- -->
-      <div w-[60%]>
+    <div class="flex items-start gap-2 my-1 flex-row w-full">
+      <!-- --------------- Title and SHA-1/MD5 toggle switch --------------- -->
+      <div w-[200px]>
+        <!-- --------------- Title --------------- -->
+        <h1 class="text-3xl font-bold text-left pl-2 text-gray-700">
+          ROMedit v.2
+        </h1>
+
+        <small class="block text-10px] text-left pl-2 text-gray-700 mb-0"
+          >by FedeKrum</small
+        >
+        <!-- --------------- Switch --------------- -->
         <div class="flex-shrink-0 min-w-[178px] w-14 self-start">
           <div
             class="shadow rounded-full border h-10 flex p-1 relative items-center bg-blue-400 text-white"
@@ -41,6 +36,14 @@
             </button>
           </div>
         </div>
+      </div>
+      <!-- --------------- Drag-and-drop area for files --------------- -->
+      <div
+        id="drag-area"
+        class="border-4 border-blue-500 border-dashed p-5 text-center rounded-md bg-gray-50 hover:bg-gray-200 transition w-full"
+      >
+        <h4 class="text-lg font-semibold text-gray-700">Drag & Drop files</h4>
+        <p class="text-sm text-gray-500">or click to browse</p>
       </div>
     </div>
 
@@ -57,6 +60,72 @@
 
     <!-- --------------- File information --------------- -->
     <div id="file-info" class="mt-3 font-mono text-base"></div>
+    <!-- --------------- Editor --------------- -->
+    <div id="offset-group" class="mt-4">
+      <label for="offset" class="block text-sm text-gray-700 mb-1">
+        <p class="block">
+          Offset: (in hex notation) | current decimal value:
+          <span id="offsetDEC"></span>
+        </p>
+      </label>
+      <input
+        type="text"
+        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        id="offset"
+        name="offset"
+        value="0"
+      />
+    </div>
+
+    <div id="csv" class="mt-4">
+      <label for="values" class="block text-sm text-gray-700 mb-1">
+        <p class="block">
+          Values: (address, byte : both in hex notation) | changes:
+          <span id="changes"></span>
+        </p>
+      </label>
+
+      <div class="flex flex-row">
+        <div class="">
+          <textarea
+            id="valuesStatus"
+            name="valuesStatus"
+            class="w-full max-w-32 p-2 border border-gray-300 rounded font-mono bg-gray-100 resize-none"
+            rows="5"
+            readonly
+          >
+1 ✅
+2 🚫R
+3 🚫S
+4 ✅
+5 ✅
+6 ✅
+7 
+        </textarea
+          >
+        </div>
+        <div class="">
+          <textarea
+            id="values"
+            name="values"
+            class="w-full p-2 border border-gray-300 rounded font-mono resize-none"
+            rows="5"
+          >
+0,1
+90,3
+esdfsdfs
+2,3
+3,4
+4,5
+          </textarea>
+        </div>
+      </div>
+
+      <small class="block mt-2 text-gray-600">
+        ✅ Ok&nbsp;&nbsp;&nbsp;🚫<strong>R</strong> No change. Out of
+        range&nbsp;&nbsp;&nbsp;🚫<strong>S</strong> No change. Syntax error
+      </small>
+    </div>
 
     <!-- --------------- Download button --------------- -->
     <button
@@ -217,10 +286,10 @@
 
         const fileDetails = `
           <div class="bg-white shadow rounded-lg p-2  font-mono">
-              <p class="text-sm"><strong>src ${
+              <p class="text-sm"><strong>SRC ${
                 filesHolder.hashAlgorithm
               }:</strong> ${file.originalHash}</p>
-              <p class="text-sm"><strong>out ${
+              <p class="text-sm"><strong>OUT ${
                 filesHolder.hashAlgorithm
               }:</strong> ${file.editableHash}</p>
 
