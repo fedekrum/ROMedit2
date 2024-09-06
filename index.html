@@ -16,44 +16,43 @@
       </h1>
     </div>
 
-    <!-- --------------- Drag-and-drop area for files --------------- -->
-    <div
-      id="drag-area"
-      class="border-4 border-blue-500 border-dashed p-5 text-center rounded-md bg-gray-50 hover:bg-gray-200 transition"
-    >
-      <h4 class="text-lg font-semibold text-gray-700">
-        Drag & Drop your files here
-      </h4>
-      <p class="text-sm text-gray-500">or click to select files</p>
-    </div>
-
     <!-- Container to hold both divs in a flex layout with the new xs breakpoint -->
-    <div class="flex items-start gap-2 mt-3 sm:flex-row flex-col w-full">
-      <!-- --------------- Dropdown menu for selecting a file --------------- -->
-      <div class="flex-grow sm:w-auto w-full">
-        <select
-          id="file-select"
-          class="block w-full p-2 border border-gray-300 rounded font-mono"
-          aria-label="Select a file"
-        >
-          <option value="">Select a file</option>
-        </select>
+    <div class="flex items-start gap-2 mt-3 flex-row w-full">
+      <!-- --------------- Drag-and-drop area for files --------------- -->
+      <div
+        id="drag-area"
+        class="border-4 border-blue-500 border-dashed p-5 text-center rounded-md bg-gray-50 hover:bg-gray-200 transition w-[40%]"
+      >
+        <h4 class="text-lg font-semibold text-gray-700">Drag & Drop files</h4>
+        <p class="text-sm text-gray-500">or click to browse</p>
       </div>
-
       <!-- --------------- Toggle switch (SHA-1/MD5) --------------- -->
-      <div class="flex-shrink-0 min-w-[178px] w-14 self-start">
-        <div
-          class="shadow rounded-full border h-10 flex p-1 relative items-center bg-blue-400 text-white"
-        >
-          <span class="w-full flex justify-center">MD5</span>
-          <span class="w-full flex justify-center">SHA-1</span>
-          <button
-            class="elSwitch bg-white shadow text-gray-800 flex items-center justify-center w-1/2 rounded-full h-8 transition-all top-[px] absolute left-1"
+      <div w-[60%]>
+        <div class="flex-shrink-0 min-w-[178px] w-14 self-start">
+          <div
+            class="shadow rounded-full border h-10 flex p-1 relative items-center bg-blue-400 text-white"
           >
-            Hashing
-          </button>
+            <span class="w-full flex justify-center">MD5</span>
+            <span class="w-full flex justify-center">SHA-1</span>
+            <button
+              class="elSwitch bg-white shadow text-gray-800 flex items-center justify-center w-1/2 rounded-full h-8 transition-all top-[px] absolute left-1"
+            >
+              Hashing
+            </button>
+          </div>
         </div>
       </div>
+    </div>
+
+    <!-- --------------- Dropdown menu for selecting a file --------------- -->
+    <div class="flex-grow w-auto">
+      <select
+        id="file-select"
+        class="block w-full p-2 border border-gray-300 rounded font-mono"
+        aria-label="Select a file"
+      >
+        <option value="">Select a file</option>
+      </select>
     </div>
 
     <!-- --------------- File information --------------- -->
@@ -217,18 +216,18 @@
         if (!file) return;
 
         const fileDetails = `
-          <div class="bg-white shadow rounded-lg p-4 mb-4 font-mono">
-              <h5 class="font-semibold text-lg">${file.name}</h5>
-              <p class="text-sm"><strong>Size:</strong> ${file.size} bytes</p>
-              <p class="text-sm"><strong>Original ${
+          <div class="bg-white shadow rounded-lg p-2  font-mono">
+              <p class="text-sm"><strong>src ${
                 filesHolder.hashAlgorithm
               }:</strong> ${file.originalHash}</p>
-              <p class="text-sm"><strong>Editable ${
+              <p class="text-sm"><strong>out ${
                 filesHolder.hashAlgorithm
               }:</strong> ${file.editableHash}</p>
+
+              <p class="text-sm"><strong>Size:</strong> ${file.size} bytes
               ${
                 file.zipFileName
-                  ? `<p class="text-sm"><strong>Contained in ZIP:</strong> ${file.zipFileName}</p>`
+                  ? ` | <strong>From:</strong> ${file.zipFileName}</p>`
                   : ""
               }
           </div>
