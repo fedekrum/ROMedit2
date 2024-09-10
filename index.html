@@ -60,17 +60,18 @@
 
     <!-- --------------- File information --------------- -->
     <div id="file-info" class="mt-3 font-mono text-base"></div>
+
     <!-- --------------- Editor --------------- -->
     <div id="offset-group" class="mt-4">
       <label for="offset" class="block text-sm text-gray-700 mb-1">
-        <p class="block">
+        <p class="block pl-2">
           Offset: (in hex notation) | current decimal value:
           <span id="offsetDEC"></span>
         </p>
       </label>
       <input
         type="text"
-        class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="block w-full m-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         id="offset"
         name="offset"
         value="0"
@@ -79,52 +80,98 @@
 
     <div id="csv" class="mt-4">
       <label for="values" class="block text-sm text-gray-700 mb-1">
-        <p class="block">
+        <p class="block pl-2">
           Values: (address, byte : both in hex notation) | changes:
           <span id="changes"></span>
         </p>
       </label>
 
-      <div class="flex flex-row">
-        <div class="">
+      <div class="flex pl-2 gap-2">
+        <div class="flex-none">
           <textarea
             id="valuesStatus"
             name="valuesStatus"
-            class="w-full max-w-32 p-2 border border-gray-300 rounded font-mono bg-gray-100 resize-none"
+            class="inline min-w-fit max-w-none p-2 border border-gray-300 rounded font-mono bg-gray-100 resize-none overflow-x-auto whitespace-pre-line [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
             rows="5"
             readonly
           >
-1 ✅
-2 🚫R
-3 🚫S
-4 ✅
-5 ✅
-6 ✅
-7 
-        </textarea
+    1 ✅
+    20 🚫R
+    300 🚫S
+    4000 ✅
+    50000 ✅
+    60000 ✅
+    70000 🚫R</textarea
           >
         </div>
-        <div class="">
+        <div class="flex-1">
           <textarea
             id="values"
             name="values"
-            class="w-full p-2 border border-gray-300 rounded font-mono resize-none"
+            class="inline w-full p-2 border border-gray-300 rounded font-mono resize-none"
             rows="5"
           >
-0,1
-90,3
-esdfsdfs
-2,3
-3,4
-4,5
-          </textarea>
+    0,1
+    90,3
+    esdfsdfs
+    2,3
+    3,4
+    4,5
+    4,5</textarea
+          >
         </div>
       </div>
 
-      <small class="block mt-2 text-gray-600">
+      <small class="block text-gray-600 pl-2">
         ✅ Ok&nbsp;&nbsp;&nbsp;🚫<strong>R</strong> No change. Out of
         range&nbsp;&nbsp;&nbsp;🚫<strong>S</strong> No change. Syntax error
       </small>
+    </div>
+
+    <div class="flex items-start justify-center min-h-screen bg-gray-100 p-0">
+      <div class="flex w-full max-w-4xl gap-2">
+        <!-- First Textarea: Grows with content and scrolls horizontally -->
+        <textarea
+          id="dynamic-textarea"
+          class="flex-none p-2 border border-gray-300 rounded bg-gray-50 resize-none overflow-x-auto whitespace-nowrap"
+          rows="5"
+          style="min-width: 10%; max-width: 70%"
+        ></textarea>
+
+        <!-- Second Textarea: Fills Remaining Space -->
+        <textarea
+          class="flex-1 p-2 border border-gray-300 rounded bg-gray-50 resize-none"
+          rows="5"
+        ></textarea>
+      </div>
+
+      <script>
+        // Select the dynamic textarea element
+        const dynamicTextarea = document.getElementById("dynamic-textarea");
+
+        // Add event listener to resize the textarea as the content changes
+        dynamicTextarea.addEventListener("input", resizeTextarea);
+
+        function resizeTextarea() {
+          // Temporarily set width to auto to recalculate size
+          dynamicTextarea.style.width = "auto";
+
+          // Calculate the new width based on scrollWidth
+          const newWidth = dynamicTextarea.scrollWidth;
+
+          // Set the new width with boundaries from 10% to 70% of the parent width
+          dynamicTextarea.style.width = `${Math.min(
+            Math.max(
+              newWidth,
+              dynamicTextarea.parentElement.offsetWidth * 0.01
+            ),
+            dynamicTextarea.parentElement.offsetWidth * 0.7
+          )}px`;
+        }
+
+        // Call the resize function initially to adjust to any preset content
+        resizeTextarea();
+      </script>
     </div>
 
     <!-- --------------- Download button --------------- -->
@@ -326,6 +373,16 @@ esdfsdfs
           } catch (error) {
             console.error("Error downloading ZIP file:", error);
           }
+        });
+
+      // ---------------- PARALLEL SCROLL
+      document.getElementById("values").addEventListener("scroll", function () {
+        document.getElementById("valuesStatus").scrollTop = this.scrollTop;
+      });
+      document
+        .getElementById("valuesStatus")
+        .addEventListener("scroll", function () {
+          document.getElementById("values").scrollTop = this.scrollTop;
         });
     </script>
   </body>

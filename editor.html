@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contenteditable Example with Scrollbar</title>
+    <style>
+      #editable-content {
+        width: 300px;
+        height: 200px;
+        border: 1px solid #ccc;
+        padding: 5px;
+        overflow-y: scroll; /* Enable vertical scroll bar */
+      }
+
+      strong {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="editable-content" contenteditable="true">
+      This is the first line.<br />
+      See, how the text fits here, also if<br />there is a
+      <strong>linebreak</strong> at the end? <br />It works nicely.
+      <br />
+      <br /><span style="color: lightgreen">Great</span>.
+    </div>
+
+    <script>
+      // JavaScript to block editing and insert HTML
+      document.addEventListener("DOMContentLoaded", () => {
+        const editableDiv = document.getElementById("editable-content");
+
+        // Block editing by changing the contenteditable attribute
+        editableDiv.setAttribute("contenteditable", "false");
+
+        // Function to insert HTML dynamically
+        function insertHTML() {
+          const newHTML = `
+                <p>New content added dynamically.</p>
+                <p>This content cannot be edited by the user.</p>
+                <p>Additional lines to demonstrate the scrolling feature.</p>
+                <p>More content...</p>
+                <p>Keep scrolling...</p>
+                <p>Scroll bars are here!<span style="color: lightgreen">Great</span></p>
+            `;
+          // Insert the new HTML content inside the div
+          editableDiv.innerHTML = newHTML;
+        }
+
+        // Call the insertHTML function to update content
+        insertHTML();
+      });
+    </script>
+  </body>
+</html>
