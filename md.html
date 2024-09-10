@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>File Drag and Drop with ZIP Download</title>
+    <!-- Tailwind CSS CDN -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="./css/tailwind.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100 min-w-[375px] w-full">
+    <!--  -->
+
+    <div class="flex flex-col md:flex-row">
+      <div id="left" class="flex-1">
+        <!-- --------------- Download button --------------- -->
+        <button
+          id="download-button"
+          class="w-full mt-3 py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition"
+        >
+          Download ZIP with All Files
+        </button>
+      </div>
+      <!-- --------------- HEX dump content --------------- -->
+      <div id="right" class="flex-1">
+        <div
+          id="file-content"
+          class="bg-orange-200 m-[1px] font-mono text-dynamic"
+        >
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;1&nbsp;2&nbsp;3&nbsp;&nbsp;4&nbsp;5&nbsp;6&nbsp;7&nbsp;&nbsp;8&nbsp;9&nbsp;a&nbsp;b&nbsp;&nbsp;c&nbsp;d&nbsp;e&nbsp;f&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--------&nbsp;--------&nbsp;--------&nbsp;--------&nbsp;&nbsp;&nbsp;0123456789abcdef<br />
+          0000&nbsp;|&nbsp;3a0040fe&nbsp;55ca0140&nbsp;3a008831&nbsp;0088c3a3&nbsp;|&nbsp;:.@þUÊ.@:..1..Ã£<br />
+          0010&nbsp;|&nbsp;02ffffff&nbsp;ffffffff&nbsp;4f3afe83&nbsp;b7c8e521&nbsp;|&nbsp;.ÿÿÿÿÿÿÿO:þ.·Èå!<br />
+          0020&nbsp;|&nbsp;0083347e&nbsp;6f71e1c9&nbsp;1a777dd6&nbsp;206f3001&nbsp;|&nbsp;..4~oqáÉ.w}Ö&nbsp;o0.<br />
+          0030&nbsp;|&nbsp;251310f4&nbsp;c9ffffff&nbsp;11102021&nbsp;00a80620&nbsp;|&nbsp;%..ôÉÿÿÿ..&nbsp;!.¨.&nbsp;<br />
+          0040&nbsp;|&nbsp;732310fc&nbsp;0e1510fe&nbsp;0d20fb15&nbsp;20f0c9ff&nbsp;|&nbsp;s#.ü...þ.&nbsp;û.&nbsp;ðÉÿ<br />
+          0050&nbsp;|&nbsp;ffffffff&nbsp;ffffffff&nbsp;ffffffff&nbsp;ffffffff&nbsp;|&nbsp;ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿ<br />
+          0060&nbsp;|&nbsp;ffffffff&nbsp;fffff5e5&nbsp;d5c5dde5&nbsp;fde53a00&nbsp;|&nbsp;ÿÿÿÿÿÿõåÕÅÝåýå:.<br />
+          0070&nbsp;|&nbsp;88af3208&nbsp;b8cdf02c&nbsp;21078011&nbsp;07b07e12&nbsp;|&nbsp;.¯2.¸Íð,!....°~.<br />
+          0080&nbsp;|&nbsp;2c1c061c&nbsp;7e0f0f0f&nbsp;0f122c1c&nbsp;7e122c1c&nbsp;|&nbsp;,...~.....,.~.,.<br />
+          0090&nbsp;|&nbsp;10f20e08&nbsp;3a2f84b7&nbsp;28050e06&nbsp;1e486b7e&nbsp;|&nbsp;.ò..:/.·(....Hk~<br />
+          00a0&nbsp;|&nbsp;0f0f0f0f&nbsp;122c1c06&nbsp;037e122c&nbsp;1c10fa0d&nbsp;|&nbsp;.....,...~.,..ú.<br />
+          00b0&nbsp;|&nbsp;20ed217f&nbsp;837eb728&nbsp;07352004&nbsp;af321cb8&nbsp;|&nbsp;&nbsp;í!..~·(.5&nbsp;.¯2.¸<br />
+          00c0&nbsp;|&nbsp;217e837e&nbsp;b7280735&nbsp;2004af32&nbsp;18b83a04&nbsp;|&nbsp;!~.~·(.5&nbsp;.¯2.¸:.<br />
+          00d0&nbsp;|&nbsp;e0e608ca&nbsp;fc003afe&nbsp;83a7cafc&nbsp;003afd83&nbsp;|&nbsp;àæ.Êü.:þ.§Êü.:ý.<br />
+          00e0&nbsp;|&nbsp;a728193d&nbsp;28160e02&nbsp;21438011&nbsp;43b07e81&nbsp;|&nbsp;§(.=(...!C..C°~.<br />
+          00f0&nbsp;|&nbsp;120e0221&nbsp;47801147&nbsp;b07e8112&nbsp;3afe83b7&nbsp;|&nbsp;...!G..G°~..:þ.·<br />
+          0100&nbsp;|&nbsp;ca2201cd&nbsp;ac073aea&nbsp;83b7ca45&nbsp;022ad283&nbsp;|&nbsp;Ê".Í¬.:ê.·ÊE.*Ò.<br />
+          0110&nbsp;|&nbsp;7cb5ca71&nbsp;012b22d2&nbsp;83cdb714&nbsp;cd0218c3&nbsp;|&nbsp;|µÊq.+"Ò.Í·.Í..Ã<br />
+          0120&nbsp;|&nbsp;45023ad6&nbsp;83fe02d2&nbsp;5801b7cc&nbsp;7a0ecd41&nbsp;|&nbsp;E.:Ö.þ.ÒX.·Ìz.ÍA<br />
+          0130&nbsp;|&nbsp;23af32cd&nbsp;8332cf83&nbsp;32b58367&nbsp;6f229382&nbsp;|&nbsp;#¯2Í.2Ï.2µ.go"..<br />
+          0140&nbsp;|&nbsp;215c8211&nbsp;5d82010b&nbsp;0070edb0&nbsp;21af8336&nbsp;|&nbsp;!\..]....pí°!¯.6<br />
+          0150&nbsp;|&nbsp;802c772c&nbsp;77c34502&nbsp;21d8837e&nbsp;b7ca4502&nbsp;|&nbsp;.,w,wÃE.!Ø.~·ÊE.<br />
+          0160&nbsp;|&nbsp;35c24502&nbsp;2d7eb7c2&nbsp;450221d6&nbsp;8335c345&nbsp;|&nbsp;5ÂE.-~·ÂE.!Ö.5ÃE<br />
+          0170&nbsp;|&nbsp;022a8283&nbsp;7cb52812&nbsp;2b228283&nbsp;7cb5200a&nbsp;|&nbsp;.*..|µ(.+"..|µ&nbsp;.<br />
+          0180&nbsp;|&nbsp;3e0fdf3e&nbsp;b0dfaf32&nbsp;71833afd&nbsp;833dc274&nbsp;|&nbsp;&gt;.ß&gt;°ß¯2q.:ý.=Ât<br />
+          0190&nbsp;|&nbsp;023a5c82&nbsp;fe05ca5e&nbsp;023a9882&nbsp;a728073d&nbsp;|&nbsp;.:\.þ.Ê^.:..§(.=<br />
+          01a0&nbsp;|&nbsp;329882c3&nbsp;e2013a97&nbsp;82a7c257&nbsp;022a9d82&nbsp;|&nbsp;2..Ãâ.:..§ÂW.*..<br />
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
