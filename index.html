@@ -141,52 +141,6 @@
       </small>
     </div>
 
-    <div class="flex items-start justify-center min-h-screen bg-gray-100 p-0">
-      <div class="flex w-full max-w-4xl gap-2">
-        <!-- First Textarea: Grows with content and scrolls horizontally -->
-        <textarea
-          id="dynamic-textarea"
-          class="flex-none p-2 border border-gray-300 rounded bg-gray-50 resize-none overflow-x-auto whitespace-nowrap"
-          rows="5"
-          style="min-width: 10%; max-width: 70%"
-        ></textarea>
-
-        <!-- Second Textarea: Fills Remaining Space -->
-        <textarea
-          class="flex-1 p-2 border border-gray-300 rounded bg-gray-50 resize-none"
-          rows="5"
-        ></textarea>
-      </div>
-
-      <script>
-        // Select the dynamic textarea element
-        const dynamicTextarea = document.getElementById("dynamic-textarea");
-
-        // Add event listener to resize the textarea as the content changes
-        dynamicTextarea.addEventListener("input", resizeTextarea);
-
-        function resizeTextarea() {
-          // Temporarily set width to auto to recalculate size
-          dynamicTextarea.style.width = "auto";
-
-          // Calculate the new width based on scrollWidth
-          const newWidth = dynamicTextarea.scrollWidth;
-
-          // Set the new width with boundaries from 10% to 70% of the parent width
-          dynamicTextarea.style.width = `${Math.min(
-            Math.max(
-              newWidth,
-              dynamicTextarea.parentElement.offsetWidth * 0.01
-            ),
-            dynamicTextarea.parentElement.offsetWidth * 0.7
-          )}px`;
-        }
-
-        // Call the resize function initially to adjust to any preset content
-        resizeTextarea();
-      </script>
-    </div>
-
     <!-- --------------- Download button --------------- -->
     <button
       id="download-button"
