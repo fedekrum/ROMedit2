@@ -13,7 +13,7 @@
 //
 // returns: a string with the hex view of the bytes
 function hexview(bytes = [], offset = 0x0, format = "text", marks = []) {
-  return;
+
   // Convert bytes array to 2D array
   function convertTo2DArray(numbers = []) {
     const hexArray = numbers.map(number => number.toString(16).padStart(2, '0'));
@@ -79,10 +79,8 @@ function hexview(bytes = [], offset = 0x0, format = "text", marks = []) {
   let hexDump = "";
   hexDump += space.repeat(maxAddressDigits + 3);
   hexDump += hexChain + space.repeat(19) + cr;
-  hexDump += space.repeat(maxAddressDigits + 3) + "--------*" + space + "--------" + space + "--------" + space + "--------" + space + space + space;
+  hexDump += space.repeat(maxAddressDigits + 3) + "--------" + space + "--------" + space + "--------" + space + "--------" + space + space + space;
   hexDump += hexChainShort + cr;
-  var hexDumpHeader = hexDump;
-  hexDump = "";
 
   // -------------------- hexDump lines -------------------
   let cursor = 0;
@@ -114,7 +112,6 @@ function hexview(bytes = [], offset = 0x0, format = "text", marks = []) {
     hexDump += printableData + cr;
     offset += 16;
   }
-  return "x";
   return hexDump;
 }
 

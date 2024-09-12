@@ -1,0 +1,52 @@
+Hi!
+I had the need to identify which Frogger ROM I was using while playing. If it was the one with all the fixes, or it was the original. It occurred to me that changing only one pixel was a possible way to realise that. The decision was to do it on the "screen" sprite that is (or are, depending on the screen number you are) at the bottom right of the display.
+
+The change was from this:
+
+
+to this:
+
+
+
+
+
+A simple black pixel in the middle. It's only visual. 
+This does not affect at all how the game runs.
+
+These instructions are for using them with ROMedit at https://fedekrum.github.io/ROMedit/ or any other hex editor if you know how to use it.
+
+For frogger.zip
+
+
+
+Patch for ROM "frogger.606"
+
+1) Drag and drop the ROM file to the page
+MD5: a568a1d681a64650873e58509d5f83fb
+Offset in HEX: 0
+The bytes to change are: (copy and paste in the values area)
+263,16
+The result will be a ROM with MD5 of 686dcb4f72ca6a0f1021c2538f1e3b8f
+2) Download the new "frogger.606" file
+
+
+
+
+
+For froggers2.zip
+
+
+
+Patch for ROM "epr-606.ic102"
+
+1) Drag and drop the ROM file to the page
+MD5: a568a1d681a64650873e58509d5f83fb
+Offset in HEX: 0
+The bytes to change are: (copy and paste in the values area)
+263,16
+The result will be a ROM with MD5 of 686dcb4f72ca6a0f1021c2538f1e3b8f
+2) Download the new "epr-606.ic102" file
+
+
+
+Enjoy !!
